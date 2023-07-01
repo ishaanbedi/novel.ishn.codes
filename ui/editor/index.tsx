@@ -7,10 +7,9 @@ import { TiptapExtensions } from "./extensions";
 import useLocalStorage from "@/lib/hooks/use-local-storage";
 import { useDebouncedCallback } from "use-debounce";
 import { useCompletion } from "ai/react";
-import { toast } from "sonner";
+import { Toaster, toast } from "sonner";
 import va from "@vercel/analytics";
 import DEFAULT_EDITOR_CONTENT from "./default-content";
-
 import { EditorBubbleMenu } from "./components";
 
 export default function Editor() {
@@ -21,6 +20,8 @@ export default function Editor() {
   const [saveStatus, setSaveStatus] = useState("Saved");
 
   const [hydrated, setHydrated] = useState(false);
+
+  const [disableShareButton, setDisableShareButton] = useState(false);
 
   const debouncedUpdates = useDebouncedCallback(async ({ editor }) => {
     const json = editor.getJSON();
@@ -132,19 +133,65 @@ export default function Editor() {
       setHydrated(true);
     }
   }, [editor, content, hydrated]);
+  const performKVOperation = async () => {
+    const body = {
+      content,
+    };
+    setDisableShareButton(true);
+    toast.message("Generating shareable link...", {
+      description: "Hold on for a moment...",
+    });
+
+    const res = await fetch("/api/setData", {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
+    toast.dismiss();
+    setDisableShareButton(false);
+    const { data, slug } = await res.json();
+    console.log(data);
+    if (data === "OK") {
+      toast("Document ready to be shared", {
+        action: {
+          label: "Copy Link",
+          onClick: () => {
+            navigator.clipboard.writeText(
+              `${process.env.NEXT_PUBLIC_SITE_URL}/shared/${slug}`,
+            );
+            toast.success("Copied to clipboard");
+          },
+        },
+      });
+    }
+  };
 
   return (
-    <div
-      onClick={() => {
-        editor?.chain().focus().run();
-      }}
-      className="relative min-h-[500px] w-full max-w-screen-lg border-stone-200 p-12 px-8 sm:mb-[calc(20vh)] sm:rounded-lg sm:border sm:px-12 sm:shadow-lg"
-    >
-      <div className="absolute right-5 top-5 mb-5 rounded-lg bg-stone-100 px-2 py-1 text-sm text-stone-400">
-        {saveStatus}
+    <>
+      <div
+        onClick={() => {
+          editor?.chain().focus().run();
+        }}
+        className="relative min-h-[500px] w-full max-w-screen-lg border-stone-200 p-12 px-8 sm:mb-[calc(20vh)] sm:rounded-lg sm:border sm:px-12 sm:shadow-lg"
+      >
+        <div className="flex items-center justify-end space-x-2">
+          <div className="mb-5 rounded-lg bg-stone-100 px-2 py-1 text-sm text-stone-400">
+            {saveStatus}
+          </div>
+          <button
+            className={`mb-5 cursor-pointer rounded-lg bg-stone-100 px-2 py-1 text-sm text-stone-400 hover:bg-stone-200 hover:text-stone-500 ${
+              disableShareButton && "cursor-not-allowed opacity-50"
+            }`}
+            onClick={performKVOperation}
+            disabled={disableShareButton || saveStatus === "Saving..."}
+          >
+            Share
+          </button>
+        </div>
+        <div>
+          {editor && <EditorBubbleMenu editor={editor} />}
+          <EditorContent editor={editor} />
+        </div>
       </div>
-      {editor && <EditorBubbleMenu editor={editor} />}
-      <EditorContent editor={editor} />
-    </div>
+    </>
   );
 }
