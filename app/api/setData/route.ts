@@ -1,6 +1,6 @@
 import { kv } from "@vercel/kv";
 import { NextResponse } from "next/server";
-export async function POST(req: Request, res: Response) {
+export async function POST(req: Request) {
   const slugGenerator = () => {
     const chars =
       "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -21,11 +21,6 @@ export async function POST(req: Request, res: Response) {
   }
 
   const dataToSet = await kv.set(slug, body);
-  console.log({
-    slug: slug,
-    data: dataToSet,
-  });
-
   return NextResponse.json({
     slug: slug,
     data: dataToSet,

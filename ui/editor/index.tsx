@@ -149,7 +149,6 @@ export default function Editor() {
     toast.dismiss();
     setDisableShareButton(false);
     const { data, slug } = await res.json();
-    console.log(data);
     if (data === "OK") {
       toast("Document ready to be shared", {
         action: {
