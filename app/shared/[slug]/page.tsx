@@ -56,7 +56,7 @@ export default function Page({
         {showingNotFoundError && (
           <>
             <p className="text-stone-400">
-              The page you're looking for doesn't exist.
+              The page you are looking for does not exist.
             </p>
             <Link href="/">
               <button className="rounded-lg bg-stone-300 px-3 py-2 text-stone-400 transition-colors duration-200 hover:bg-stone-400 hover:text-stone-100">
