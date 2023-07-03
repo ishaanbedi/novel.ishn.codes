@@ -4,6 +4,11 @@
 </a>
 
 <p align="center">
+  This project is built on top of <a href="https://github.com/steven-tey/novel">steven-tey/novel</a> and adds a sharing functionality using Vercel KV.
+</p>
+
+
+<p align="center">
   An open-source Notion-style WYSIWYG editor with AI-powered autocompletions. 
 </p>
 
