@@ -4,7 +4,7 @@
 </a>
 
 <p align="center">
-  This project is built on top of <a href="https://github.com/steven-tey/novel">steven-tey/novel</a> and adds a sharing functionality using Vercel KV.
+  This project extends <a href="https://github.com/steven-tey/novel">steven-tey/novel</a> and adds a sharing functionality using Vercel KV.
 </p>
 
 
